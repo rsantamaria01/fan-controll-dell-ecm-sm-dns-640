@@ -142,7 +142,7 @@ static int ismt_init(void) {
     /* Use mmap anonymous for descriptor + data buffer */
     desc_ring = (struct ismt_desc *)mmap(NULL, 4096,
         PROT_READ | PROT_WRITE,
-        MAP_ANON | MAP_SHARED | MAP_LOCKED, -1, 0);
+        MAP_ANON | MAP_SHARED | MAP_NOSYNC, -1, 0);
     if (desc_ring == MAP_FAILED) {
         perror("mmap desc_ring");
         return -1;
