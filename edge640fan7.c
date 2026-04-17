@@ -256,6 +256,9 @@ static int ismt_smbus_read_byte(uint8_t addr, uint8_t cmd) {
             break;
     }
 
+    printf("DEBUG desc status=0x%02x rxbytes=%d\n", desc_ring->status, desc_ring->rxbytes);
+    printf("DEBUG MSTS=0x%08x MCTRL=0x%08x\n", ismt_read32(ISMT_MSTR_MSTS), ismt_read32(ISMT_MSTR_MCTRL));
+
     if (timeout <= 0) {
         fprintf(stderr, "iSMT read timeout addr=0x%02x cmd=0x%02x\n", addr, cmd);
         return -1;
