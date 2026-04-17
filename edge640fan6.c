@@ -140,9 +140,7 @@ static int ismt_init(void) {
 
     /* Allocate descriptor ring (1 descriptor = 32 bytes) and DMA buf */
     /* Use mmap anonymous for descriptor + data buffer */
-    desc_ring = (struct ismt_desc *)mmap(NULL, 4096,
-        PROT_READ | PROT_WRITE,
-        MAP_ANON | MAP_SHARED | MAP_NOSYNC, -1, 0);
+    desc_ring = (struct ismt_desc *)map_phys(mem_fd, 0x10000, 4096);
     if (desc_ring == MAP_FAILED) {
         perror("mmap desc_ring");
         return -1;
@@ -192,7 +190,7 @@ static int ismt_smbus_write_byte(uint8_t addr, uint8_t cmd, uint8_t val) {
     /* Get physical address - FreeBSD vtophys equivalent */
     /* We'll use the virtual address directly and hope for the best
      * on a system with direct mapping */
-    uint64_t dma_phys = (uint64_t)(uintptr_t)dma_buf;
+    uint64_t dma_phys = 0x10000 + 256;
 
     /* Setup descriptor */
     memset(desc_ring, 0, sizeof(struct ismt_desc));
@@ -204,7 +202,7 @@ static int ismt_smbus_write_byte(uint8_t addr, uint8_t cmd, uint8_t val) {
     desc_ring->dma_buffer = dma_phys;
 
     /* Set descriptor base address */
-    uint64_t desc_phys = (uint64_t)(uintptr_t)desc_ring;
+    uint64_t desc_phys = 0x10000;
     ismt_write64(ISMT_MSTR_MDBA, desc_phys);
     ismt_write32(ISMT_MSTR_MDS, 1); /* 1 descriptor */
 
@@ -236,7 +234,7 @@ static int ismt_smbus_read_byte(uint8_t addr, uint8_t cmd) {
     dma_buf[0] = cmd;
     memset(dma_buf + 1, 0, 1);
 
-    uint64_t dma_phys = (uint64_t)(uintptr_t)dma_buf;
+    uint64_t dma_phys = 0x10000 + 256;
 
     memset(desc_ring, 0, sizeof(struct ismt_desc));
     desc_ring->tgtaddr_rw = ISMT_DESC_ADDR_RW(addr, 0); /* Write cmd first */
@@ -246,7 +244,7 @@ static int ismt_smbus_read_byte(uint8_t addr, uint8_t cmd) {
     desc_ring->status     = 0;
     desc_ring->dma_buffer = dma_phys;
 
-    uint64_t desc_phys = (uint64_t)(uintptr_t)desc_ring;
+    uint64_t desc_phys = 0x10000;
     ismt_write64(ISMT_MSTR_MDBA, desc_phys);
     ismt_write32(ISMT_MSTR_MDS, 1);
     ismt_write32(ISMT_MSTR_MCTRL, ISMT_MCTRL_SS);
