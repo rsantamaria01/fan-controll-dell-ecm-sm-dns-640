@@ -89,7 +89,7 @@ struct ismt_desc {
 #define MAX6620_ADDR         0x1b
 
 /* iSMT MMIO base for pci0:0:18:0 */
-#define ISMT_MMIO_BASE       0x7ff54000ULL
+#define ISMT_MMIO_BASE       0x777ff54000ULL
 
 /* Tach constants */
 #define TACH_FREQ    8192
