@@ -236,6 +236,9 @@ static int set_fan_speed(int rpm) {
     printf("Setting fans to ~%d RPM (tach=0x%03x hi=0x%02x lo=0x%02x)\n",
            rpm, tach, tach_hi, tach_lo);
 
+    i2c_write_byte(MAX6620_ADDR, MAX6620_GCONFIG, 0x08);
+    usleep(10000);
+
     /* Set fan 1 target */
     if (i2c_write_byte(MAX6620_ADDR, MAX6620_FAN1_TGT_HI, tach_hi) < 0) return -1;
     if (i2c_write_byte(MAX6620_ADDR, MAX6620_FAN1_TGT_LO, tach_lo) < 0) return -1;
