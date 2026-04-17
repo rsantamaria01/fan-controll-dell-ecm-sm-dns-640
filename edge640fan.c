@@ -67,8 +67,8 @@
  * Primary controller (31:4) is at 0x777ff50000
  * Secondary (31:5) is typically at next BAR
  */
-//#define SMB_MMIO_BASE_PRI    0x777ff50000ULL  /* Primary - device 31:4 */
-#define SMB_MMIO_BASE_PRI    0xfe010000ULL  /* Secondary - device 31:5 */
+#define SMB_MMIO_BASE_PRI    0x777ff50000ULL  /* Primary - device 31:4 */
+//#define SMB_MMIO_BASE_PRI    0xfe010000ULL  /* Secondary - device 31:5 */
 
 /* MAX6620 tach frequency: uses 8192 Hz clock, 2 pulses per rev */
 #define MAX6620_TACH_FREQ    8192
@@ -264,10 +264,15 @@ int main(int argc, char *argv[]) {
 
     /* Try primary SMBus MMIO base first, then offset for secondary */
     uint64_t bases[] = {
+        0x7ff50000ULL,
+        0x7ff50000ULL + 0x100,
+        0x7ff50000ULL + 0x200,
+    };
+    /*uint64_t bases[] = {
         0xfe010000ULL,
         0xfe010000ULL + 0x100,
         0xfe010000ULL + 0x200,
-    };
+    };*/
 
     int found = 0;
     for (int i = 0; i < 3; i++) {
